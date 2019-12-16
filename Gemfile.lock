@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    i18n-json (0.0.0)
+    i18n-json (0.0.1)
       glob
       i18n
 
