@@ -61,6 +61,8 @@ $ i18n-json init --config config/i18n.yml
 $ i18n-json export --config config/i18n.yml --require config/boot.rb
 ```
 
+You can also automatically export translations when file changes using [guard-i18n-json](https://github.com/fnando/guard-i18n-json).
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
