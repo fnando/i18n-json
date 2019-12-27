@@ -45,8 +45,17 @@ module I18nJSON
           ui.fail_with("ERROR: require file doesn't exist at #{require_file}")
         end
 
-        require require_file if require_file
+        require_without_warnings(require_file) if require_file
         I18nJSON.call(config_file: config_file)
+      end
+
+      private def require_without_warnings(path)
+        old_verbose = $VERBOSE
+        $VERBOSE = nil
+
+        require path
+      ensure
+        $VERBOSE = old_verbose
       end
     end
   end
