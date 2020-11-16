@@ -18,8 +18,8 @@ module Minitest
 
       begin
         block.call
-      rescue I18nJSON::Schema::InvalidError => e
-        error = e
+      rescue I18nJSON::Schema::InvalidError => error
+        # do nothing
       end
 
       assert error, "Expected block to have raised a schema error"
@@ -40,8 +40,8 @@ module Minitest
 
     private def assert_exit_code(expected_code, &block)
       block.call
-    rescue SystemExit => e
-      assert_equal expected_code, e.exception.status
+    rescue SystemExit => error
+      assert_equal expected_code, error.exception.status
     end
 
     private def assert_stdout_includes(text)

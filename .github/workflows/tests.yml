@@ -1,47 +1,59 @@
----
 name: tests
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+  schedule:
+    - cron: "0 10 * * *"
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Tests with Ruby ${{ matrix.ruby }} and ${{ matrix.gemfile }}
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [2.6.x, 2.7.x]
+        gemfile:
+          - Gemfile
 
     steps:
-      - name: Clone repo
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v2.3.4
 
-      - name: Ruby cache
-        uses: actions/cache@v1
-        id: cache
-        with:
-          path: ~/local/rubies
-          key: ruby-2.6.5
-
-      - name: Rubygems cache
-        uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: ${{ runner.os }}-gem-
+          key: >
+            ${{ runner.os }}-${{ matrix.ruby }}-gems-${{
+            hashFiles(matrix.gemfile) }}
+          restore-keys: >
+            ${{ runner.os }}-${{ matrix.ruby }}-gems-${{
+            hashFiles(matrix.gemfile) }}
 
-      - name: Install ruby
-        uses: clupprich/ruby-build-action@master
-        id: ruby
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
         with:
-          ruby-version: 2.6.5
-          cache-available: ${{ steps.cache.outputs.cache-hit == 'true' }}
+          ruby-version: ${{ matrix.ruby }}
 
-      - name: Bundle install
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y libevent-dev libseccomp-dev git libsasl2-dev
+
+      - name: Install gem dependencies
+        env:
+          BUNDLE_GEMFILE: ${{ matrix.gemfile }}
         run: |
           gem install bundler
           bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
+          bundle update --jobs 4 --retry 3
 
-      - name: Run ruby tests
+      - name: Run Tests
+        env:
+          BUNDLE_GEMFILE: ${{ matrix.gemfile }}
         run: |
           bundle exec rake
-
-      - name: Run lint
-        run: |
-          bundle exec rubocop

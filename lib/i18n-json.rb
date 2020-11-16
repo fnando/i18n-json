@@ -30,7 +30,7 @@ module I18nJSON
     output_file_path = File.expand_path(group[:file])
 
     if output_file_path.include?(":locale")
-      filtered_translations.keys.each do |locale|
+      filtered_translations.each_key do |locale|
         locale_file_path = output_file_path.gsub(/:locale/, locale.to_s)
         write_file(locale_file_path, locale => filtered_translations[locale])
       end
