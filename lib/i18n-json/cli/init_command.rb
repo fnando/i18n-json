@@ -35,10 +35,12 @@ module I18nJSON
           file << <<~YAML
             ---
             translations:
-              - file: some/dir/locale.json
+              - file: app/javascript/locales.json
                 patterns:
                   - "*"
                   - "!*.activerecord"
+                  - "!*.errors"
+                  - "!*.number.nth"
 
           YAML
         end
