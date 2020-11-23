@@ -13,11 +13,11 @@ module Minitest
       FileUtils.rm_rf "./test/output"
     end
 
-    private def assert_schema_error(message, &block)
+    private def assert_schema_error(message)
       error = nil
 
       begin
-        block.call
+        yield
       rescue I18nJSON::Schema::InvalidError => error
         # do nothing
       end
@@ -38,8 +38,8 @@ module Minitest
       assert_equal expected, actual
     end
 
-    private def assert_exit_code(expected_code, &block)
-      block.call
+    private def assert_exit_code(expected_code)
+      yield
     rescue SystemExit => error
       assert_equal expected_code, error.exception.status
     end
