@@ -3,9 +3,33 @@
 require "test_helper"
 
 class ExporterTest < Minitest::Test
+  test "fail when neither config_file nor config is set" do
+    assert_raises(I18nJSON::MissingConfigError) do
+      I18nJSON.call(config_file: nil, config: nil)
+    end
+  end
+
   test "export all translations" do
     I18n.load_path << Dir["./test/fixtures/yml/*.yml"]
     I18nJSON.call(config_file: "./test/config/everything.yml")
+
+    assert_file "test/output/everything.json"
+    assert_json_file "test/fixtures/expected/everything.json",
+                     "test/output/everything.json"
+  end
+
+  test "export all translations using config object" do
+    I18n.load_path << Dir["./test/fixtures/yml/*.yml"]
+    I18nJSON.call(
+      config: {
+        translations: [
+          {
+            file: "test/output/everything.json",
+            patterns: ["*"]
+          }
+        ]
+      }
+    )
 
     assert_file "test/output/everything.json"
     assert_json_file "test/fixtures/expected/everything.json",

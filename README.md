@@ -46,12 +46,13 @@ translations:
       - "*"
 ```
 
-The code API:
+The Ruby API:
 
 ```ruby
 require "i18n-json"
 
-I18n::JSON.call(config_file: "config/i18n.yml")
+I18nJSON.call(config_file: "config/i18n.yml")
+I18nJSON.call(config: config)
 ```
 
 The CLI API:

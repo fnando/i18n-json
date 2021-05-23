@@ -16,8 +16,14 @@ require_relative "./i18n-json/schema"
 require_relative "./i18n-json/version"
 
 module I18nJSON
-  def self.call(config_file:)
-    config = Glob::SymbolizeKeys.call(YAML.load_file(config_file))
+  MissingConfigError = Class.new(StandardError)
+
+  def self.call(config_file: nil, config: nil)
+    if !config_file && !config
+      raise MissingConfigError, "you must set either `config_file` or `config`"
+    end
+
+    config = Glob::SymbolizeKeys.call(config || YAML.load_file(config_file))
     Schema.validate!(config)
 
     config[:translations].each do |group|
