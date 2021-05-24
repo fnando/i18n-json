@@ -17,6 +17,17 @@ class ExportCommandTest < Minitest::Test
     assert_stdout_includes "Usage: i18n-json export [options]"
   end
 
+  test "without a config file" do
+    cli = I18nJSON::CLI.new(
+      argv: %w[export],
+      stdout: stdout,
+      stderr: stderr
+    )
+
+    assert_exit_code(1) { cli.call }
+    assert_stderr_includes "ERROR: you need to specify the config file"
+  end
+
   test "with missing file" do
     config_file = "missing/i18n-json.yml"
 

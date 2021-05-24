@@ -31,6 +31,10 @@ module I18nJSON
       end
 
       command do
+        unless options[:config_file]
+          ui.fail_with("ERROR: you need to specify the config file")
+        end
+
         config_file = File.expand_path(options[:config_file])
 
         if options[:require_file]
