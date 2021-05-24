@@ -30,6 +30,7 @@ class ExportCommandTest < Minitest::Test
 
   test "with missing file" do
     config_file = "missing/i18n-json.yml"
+    path = File.expand_path(config_file)
 
     cli = I18nJSON::CLI.new(
       argv: %W[export --config #{config_file}],
@@ -38,12 +39,12 @@ class ExportCommandTest < Minitest::Test
     )
 
     assert_exit_code(1) { cli.call }
-    assert_stderr_includes \
-      "ERROR: config file doesn't exist at #{File.expand_path(config_file)}"
+    assert_stderr_includes %[ERROR: config file doesn't exist at "#{path}"]
   end
 
   test "with missing require file" do
     require_file = "missing/require.rb"
+    path = File.expand_path(require_file)
 
     cli = I18nJSON::CLI.new(
       argv: %W[
@@ -56,8 +57,7 @@ class ExportCommandTest < Minitest::Test
     )
 
     assert_exit_code(1) { cli.call }
-    assert_stderr_includes \
-      "ERROR: require file doesn't exist at #{File.expand_path(require_file)}"
+    assert_stderr_includes %[ERROR: require file doesn't exist at "#{path}"]
   end
 
   test "with existing file" do
@@ -74,6 +74,26 @@ class ExportCommandTest < Minitest::Test
     assert_file "test/output/everything.json"
     assert_json_file "test/fixtures/expected/everything.json",
                      "test/output/everything.json"
+  end
+
+  test "with require file that fails to load" do
+    I18n.load_path << Dir["./test/fixtures/yml/*.yml"]
+
+    cli = I18nJSON::CLI.new(
+      argv: %w[
+        export
+        --config test/config/everything.yml
+        --require test/config/require_error.rb
+      ],
+      stdout: stdout,
+      stderr: stderr
+    )
+
+    assert_exit_code(1) { cli.call }
+
+    assert_stderr_includes "RuntimeError => 💣"
+    assert_stderr_includes \
+      %[ERROR: couldn't load "test/config/require_error.rb"]
   end
 
   test "requires file" do

@@ -8,20 +8,20 @@ module I18nJSON
         @stderr = stderr
       end
 
-      def stdout_print(message)
-        @stdout << "#{message}\n"
+      def stdout_print(*message)
+        @stdout << "#{message.join(' ')}\n"
       end
 
-      def stderr_print(message)
-        @stderr << "#{message}\n"
+      def stderr_print(*message)
+        @stderr << "#{message.join(' ')}\n"
       end
 
-      def fail_with(message)
+      def fail_with(*message)
         stderr_print(message)
         exit(1)
       end
 
-      def exit_with(message)
+      def exit_with(*message)
         stdout_print(message)
         exit(0)
       end
